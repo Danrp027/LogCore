@@ -3,6 +3,7 @@ const path = require('path');
 const sqlite = require('sqlite3').verbose();
 const nodemailer = require('nodemailer');
 
+
 const app = express();
 
 const db = new sqlite.Database("LogCore.sqlite");
@@ -44,6 +45,7 @@ function Criar_tabela_Motoristas() {
     });
 }
 
+
 //Criar_tabela_Motoristas();
 function Criar_tabela_Veiculos() {
     const query = `
@@ -71,7 +73,7 @@ function Criar_tabela_Produtos() {
         nome TEXT NOT NULL,
         descricao TEXT,
         quantidade_estoque INTEGER DEFAULT 0,
-        estoque_minimo INTEGER DEFAULT 0,
+        estoque_minimo INTEGER DEFAULT 0
     )
 `;
 
@@ -90,7 +92,7 @@ function Criar_tabela_Pedidos() {
         cliente_nome TEXT NOT NULL,
         endereco_entrega TEXT NOT NULL,
         data_entrega DATE NOT NULL,
-        staus TEXT CHECK(status IN ('Pendente', 'Em trânsito', 'Entregue')) DEFAULT 'Pendente'
+        status TEXT CHECK(status IN ('Pendente', 'Em trânsito', 'Entregue')) DEFAULT 'Pendente'
     )
 `;
 
@@ -111,7 +113,7 @@ function Criar_tabela_ItensPedidos() {
         quantidade INTEGER NOT NULL,
         FOREIGN KEY (pedido_id) REFERENCES Pedidos(id),
         FOREIGN KEY (produto_id) REFERENCES Produtos(id)
-    )
+    );
 `;
 
     db.run(query, (err) => {
@@ -120,17 +122,20 @@ function Criar_tabela_ItensPedidos() {
     });
 }
 
+
+
 //Criar_tabela_ItensPedidos();
+
 
 function Criar_tabela_Agendamentos() {
     const query = `
-    CREATE TABLE Agendamentos_CargaDescarga(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        veiculo_id INTEGER,
-        data_hora DATETIME NOT NULL,
-        status TEXT CHECK(status IN ('Confirmado', 'Aguardando', 'Concluído)) DEFAULT 'Aguardando',
-        FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id)
-    )
+   CREATE TABLE Agendamentos_CargaDescarga(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    veiculo_id INTEGER,
+    data_hora DATETIME NOT NULL,
+    status TEXT CHECK(status IN ('Confirmado', 'Aguardando', 'Concluído')) DEFAULT 'Aguardando',
+    FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id)
+);
 `;
 
     db.run(query, (err) => {
@@ -151,7 +156,7 @@ function Criar_tabela_Manutencao() {
         data_realizada DATE,
         tipo TEXT CHECK(tipo IN ('Preventiva', 'Corretiva')) NOT NULL,
         FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id)
-    )
+    );
 `;
 
     db.run(query, (err) => {
@@ -173,7 +178,7 @@ function Criar_tabela_Entregas() {
         status TEXT CHECK(status IN ('Pendente', 'Em Trânsito', 'Entregue')) DEFAULT 'Pendente',
         FOREIGN KEY (pedido_id) REFERENCES Pedidos(id),
         FOREIGN KEY (motorista_id) REFERENCES Motoristas(id)
-    )
+    );
 `;
 
     db.run(query, (err) => {
@@ -186,5 +191,5 @@ function Criar_tabela_Entregas() {
 
 
 
-app.listen(3000, console.log("Rodando... http://localhost:3000"));
+app.listen(7071, console.log("Rodando... http://localhost:7071"));
 

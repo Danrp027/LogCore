@@ -183,6 +183,8 @@ function Criar_tabela_Entregas() {
 }
 
 //Criar_tabela_Entregas();
+
+//Parte do Joahlan
 app.get("/Listar_Usuarios", (req, res) => {
 
     var sql = "SELECT * FROM USUARIOS";
@@ -218,7 +220,7 @@ app.get("Usuario_Especifico/:nome", (req, res) => {
     var sql = "SELECT * FROM USUARIOS WHERE NOME = ?";
 
     db.all(sql, [nome], (err, rows) => {
-        if (err) res.send("Erro");
+        if (err) res.send(err, "Erro");
         else res.json(rows);
     })
 
@@ -234,7 +236,7 @@ app.put("Atualizar_Usuario/:nome", (req, res) => {
     var sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ? WHERE NOME = ?";
 
     db.run(sql, [nome, email, senha], (err) => {
-        if (err) res.send("Não foi possível atualizar o usuario");
+        if (err) res.send(err, "Não foi possível atualizar o usuario");
         else res.send("Registro atualizado com sucesso no usuario = " + nome);
     })
 });
@@ -247,6 +249,120 @@ app.delete("Remover_Usuario/:nome", (req, res) => {
     var sql = "DELETE FROM USUARIOS WHERE ID = ?;";
 
 })
+
+// Fim da Parte do Joahlan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Parte do Daniel
+
+app.get("/itens-pedido", (req, res) => {
+
+    const query = `
+       SELECT
+  Itens_Pedido.id,
+  Itens_Pedido.quantidade,
+  Itens_Pedido.pedido_id,
+  Produtos.nome AS produto_nome
+FROM Itens_Pedido
+JOIN Produtos ON Itens_Pedido.produto_id = Produtos.id;
+
+        `;
+
+    db.all(query, [], (err, rows) => {
+        if (err) res.send(err);
+        else res.json(rows);
+    })
+
+});
+
+
+app.post("/itens-pedido", (req, res) => {
+    console.log("Dados recebidos no backend:", req.body);
+    
+    var pedido_id = req.body.pedido_id;
+    var produto_id = req.body.produto_id;
+    var quantidade = req.body.quantidade;
+
+    var query = "INSERT INTO Itens_Pedido(pedido_id, produto_id, quantidade) VALUES(?, ?, ?);";
+
+
+    db.run(query, [pedido_id, produto_id, quantidade], (err) => {
+        if (err) res.send(err);
+        else res.send("Detalhes do pedidos Inseridos!");
+    })
+
+});
+
+
+app.get("/itens-pedido/:id", (req, res) => {
+
+    var pedidoid = req.params.id;
+
+    var query = "SELECT * FROM Itens_Pedido WHERE id = ?";
+
+    db.all(query, [pedidoid], (err, rows) => {
+        if (err) res.send(err);
+        else res.json(rows);
+    })
+
+});
+
+
+app.put("/itens-pedido/:id", (req, res) => {
+
+    var id = req.params.id;
+    var pedido_id = req.body.pedido_id;
+    var produto_id = req.body.produto_id;
+    var quantidade = req.body.quantidade;
+
+    var query = `
+    UPDATE Itens_Pedido
+    SET pedido_id = ?, produto_id = ?, quantidade = ?
+    WHERE id = ?
+`;
+
+    db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
+        if (err) res.send(err);
+        else res.send("Item do Pedido Atualizado com Sucesso");
+    })
+});
+
+
+app.delete("/itens-pedido/:id", (req, res) => {
+
+    var id = req.params.id;
+
+    var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
+
+    db.run(query, [id], (err) => {
+        if (err) res.send(err);
+        else res.send("Item do Pedido Deletado Com Sucesso!");
+    })
+});
+
+
+
+
+
 
 
 app.listen(3000, console.log("Rodando... http://localhost:3000"));

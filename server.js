@@ -184,7 +184,7 @@ function Criar_tabela_Entregas() {
 
 //Criar_tabela_Entregas();
 
-//Parte do Joahlan
+//Usuarios  Joahlan
 app.get("/Listar_Usuarios", (req, res) => {
   var sql = "SELECT * FROM USUARIOS";
 
@@ -237,7 +237,93 @@ app.delete("Remover_Usuario/:nome", (req, res) => {
   var sql = "DELETE FROM USUARIOS WHERE ID = ?;";
 });
 
-// Fim da Parte do Joahlan
+// Fim Usuarios Joahlan
+
+// Daniel Produtos
+
+app.get("/listar-produtos", (req, res) => {
+  var query = "SELECT * FROM Produtos";
+
+  db.all(query, (err, rows) => {
+    if (err) res.send("erro");
+    else res.json(rows);
+  });
+});
+
+app.post("/addprodutos", (req, res) => {
+  console.log("Dados recebidos no backend:", req.body);
+
+  var nome = req.body.nome;
+  var descricao = req.body.descricao;
+  var quantidade_estoque = req.body.quantidade_estoque;
+  var estoque_minimo = req.body.estoque_minimo;
+  var codigo = req.body.codigo;
+
+  var query = `
+ INSERT INTO Produtos (nome, descricao, quantidade_estoque, estoque_minimo, codigo)
+    VALUES (?, ?, ?, ?)
+
+   `;
+
+  db.run(
+    query,
+    [nome, descricao, quantidade_estoque, estoque_minimo, codigo],
+    (err) => {
+      if (err) res.send(err);
+      else res.send("Produtos Inseridos Com Sucesso!");
+    }
+  );
+});
+
+app.get("/detalhes-produto", (req, res) => {
+  console.log(req.body);
+  var codigo = req.query.codigo;
+
+  var query = "SELECT * FROM Produtos WHERE codigo = ?";
+
+  db.all(query, [codigo], (err, rows) => {
+    if (err) res.send(err);
+    else res.json(rows);
+  });
+});
+
+app.put("/atualizar-produtos", (req, res) => {
+  console.log(req.body);
+  var nome = req.body.nome;
+  var descricao = req.body.descricao;
+  var quantidade_estoque = req.body.quantidade_estoque;
+  var estoque_minimo = req.body.estoque_minimo;
+  var codigo = req.body.codigo;
+
+  var query = `
+    UPDATE Produtos
+    SET nome = ?, descricao = ?, quantidade_estoque = ?, estoque_minimo = ?
+    WHERE codigo = ?
+`;
+
+  db.run(
+    query,
+    [nome, descricao, quantidade_estoque, estoque_minimo, codigo],
+    (err) => {
+      if (err) res.send(err);
+      else res.send("Produto Atualizado com Sucesso!");
+    }
+  );
+});
+
+app.delete("/deletar-produtos", (req, res) => {
+  console.log(req.body);
+  var codigo = req.body.codigo;
+
+  var query = "DELETE FROM Produtos WHERE codigo = ?;";
+
+  db.run(query, [codigo], (err) => {
+    if (err) res.send(err);
+    else res.send("Produto Deletado Com Sucesso!");
+  });
+});
+
+// Fim Produtos Daniel
 
 //Parte do Daniel
 
@@ -350,9 +436,8 @@ app.get("/agendamentos", (req, res) => {
 app.post("/agendamentos", (req, res) => {
   console.log("Dados recebidos no backend:", req.body);
 
-  
   var data_hora = req.body.data_hora;
-  var status = req.body.quantidade;
+  var status = req.body.status;
 
   var query =
     "INSERT INTO Agendamentos_CargaDescarga(data_hora, status) VALUES(?, ?);";
@@ -375,17 +460,16 @@ app.get("/agendamentos/:id", (req, res) => {
 });
 
 app.put("/agendamentos/:id", (req, res) => {
-  var agendamentoid = req.params.agendamentoid;
-  var produto_id = req.body.produto_id;
-  var quantidade = req.body.quantidade;
+  var data_hora = req.body.data_hora;
+  var status = req.body.status;
 
   var query = `
     UPDATE Itens_Pedido
-    SET pedido_id = ?, produto_id = ?, quantidade = ?
+    SET data_hora = ?, status = ?
     WHERE id = ?
 `;
 
-  db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
+  db.run(query, [], (err) => {
     if (err) res.send(err);
     else res.send("Item do Pedido Atualizado com Sucesso");
   });

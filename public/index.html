@@ -1,12 +1,175 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Logcore - Início</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logcore - Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background: #f4f7fa;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #16324f;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background-color: #1d4366;
+    }
+
+    .sidebar a i {
+      margin-right: 10px;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #0a0a0a;
+    }
+
+    .user-icon {
+      width: 35px;
+      height: 35px;
+      background: #1d4366;
+      border-radius: 50%;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .card .icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bem-vindo ao Logcore</h1>
+  <aside class="sidebar">
+    <h2>🔳 LOGCORE</h2>
+    <a href="#" class="active">📊 Dashboard</a>
+    <a href="#">📋 Estoque</a>
+    <a href="#">🚚 Entregas</a>
+    <a href="#">🗓️ Agendamentos</a>
+    <a href="#">📈 Manutenção</a>
+  </aside>
+
+  <main class="main">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div class="user-icon"></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="icon">📶</div>
+        <h3>Visão Geral</h3>
+        <p>Indicadores e estatísticas principais</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Gerenciar Estoque</h3>
+        <p>Controle de nível de estoque</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">🛠️</div>
+        <h3>Manutenção de Veículos</h3>
+        <p>Gerencie reparos e revisões</p>
+        <button class="btn">Ver detalhes</button>
+      </div>
+
+      <div class="card">
+        <div class="icon">🚚</div>
+        <h3>Planejar Entregas</h3>
+        <p>Organize e acompanhe pedidos</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Agendar Cargas</h3>
+        <p>Agende horários de carga descarga</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">🔧</div>
+        <h3>Manutenção de Veículos</h3>
+        <p>Gerencie reparos e revisões</p>
+        <button class="btn">Ver detalhes</button>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

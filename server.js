@@ -1,16 +1,16 @@
-const express = require('express');
-const path = require('path');
-const sqlite = require('sqlite3').verbose();
-const nodemailer = require('nodemailer');
+const express = require("express");
+const path = require("path");
+const sqlite = require("sqlite3").verbose();
+const nodemailer = require("nodemailer");
 
 const app = express();
 
 const db = new sqlite.Database("LogCore.sqlite");
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 function Criar_tabela_Usuarios() {
-    const query = `
+  const query = `
     CREATE TABLE Usuarios (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
@@ -19,16 +19,16 @@ function Criar_tabela_Usuarios() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Usuarios();
 
 function Criar_tabela_Motoristas() {
-    const query = `
+  const query = `
     CREATE TABLE Motoristas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
@@ -38,15 +38,15 @@ function Criar_tabela_Motoristas() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Motoristas();
 function Criar_tabela_Veiculos() {
-    const query = `
+  const query = `
     CREATE TABLE Veiculos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         placa TEXT NOT NULL UNIQUE,
@@ -57,15 +57,15 @@ function Criar_tabela_Veiculos() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Veiculos();
 function Criar_tabela_Produtos() {
-    const query = `
+  const query = `
     CREATE TABLE Produtos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
@@ -75,16 +75,16 @@ function Criar_tabela_Produtos() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Produtos();
 
 function Criar_tabela_Pedidos() {
-    const query = `
+  const query = `
     CREATE TABLE Pedidos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_nome TEXT NOT NULL,
@@ -94,16 +94,16 @@ function Criar_tabela_Pedidos() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Pedidos();
 
 function Criar_tabela_ItensPedidos() {
-    const query = `
+  const query = `
     CREATE TABLE Itens_Pedidos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         pedido_id INTEGER,
@@ -114,16 +114,16 @@ function Criar_tabela_ItensPedidos() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_ItensPedidos();
 
 function Criar_tabela_Agendamentos() {
-    const query = `
+  const query = `
     CREATE TABLE Agendamentos_CargaDescarga(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         veiculo_id INTEGER,
@@ -133,16 +133,16 @@ function Criar_tabela_Agendamentos() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Agendamentos();
 
 function Criar_tabela_Manutencao() {
-    const query = `
+  const query = `
     CREATE TABLE Manutencoes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         veiculo_id INTEGER,
@@ -154,16 +154,16 @@ function Criar_tabela_Manutencao() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Manutencao();
 
 function Criar_tabela_Entregas() {
-    const query = `
+  const query = `
     CREATE TABLE Entregas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         pedido_id INTEGER,
@@ -176,107 +176,73 @@ function Criar_tabela_Entregas() {
     )
 `;
 
-    db.run(query, (err) => {
-        if (err) console.log(err);
-        else console.log('Tabela Criada com Sucesso!');
-    });
+  db.run(query, (err) => {
+    if (err) console.log(err);
+    else console.log("Tabela Criada com Sucesso!");
+  });
 }
 
 //Criar_tabela_Entregas();
 
 //Parte do Joahlan
 app.get("/Listar_Usuarios", (req, res) => {
+  var sql = "SELECT * FROM USUARIOS";
 
-    var sql = "SELECT * FROM USUARIOS";
-
-    db.all(sql, (err, rows) => {
-        if (err) res.send("erro");
-        else res.json(rows);
-    })
-
+  db.all(sql, (err, rows) => {
+    if (err) res.send("erro");
+    else res.json(rows);
+  });
 });
-
 
 app.post("/Criar_Novo_Usuario", (req, res) => {
+  var nome = req.body.nome;
+  var email = req.body.email;
+  var senha = req.body.senha;
 
-    var nome = req.body.nome;
-    var email = req.body.email;
-    var senha = req.body.senha;
+  var sql = "INSERT INTO USUARIOS(NOME, EMAIL, SENHA), VALUES(?, ?, ?);";
 
-    var sql = "INSERT INTO USUARIOS(NOME, EMAIL, SENHA), VALUES(?, ?, ?);";
-
-    db.run(sql, [nome, email, senha], (err) => {
-        if (err) res.send("Erro");
-        else res.send("Usuario Criado com Sucesso!");
-    })
-
+  db.run(sql, [nome, email, senha], (err) => {
+    if (err) res.send("Erro");
+    else res.send("Usuario Criado com Sucesso!");
+  });
 });
-
 
 app.get("Usuario_Especifico/:nome", (req, res) => {
+  var nome = req.params.nome;
 
-    var nome = req.params.nome;
+  var sql = "SELECT * FROM USUARIOS WHERE NOME = ?";
 
-    var sql = "SELECT * FROM USUARIOS WHERE NOME = ?";
-
-    db.all(sql, [nome], (err, rows) => {
-        if (err) res.send(err, "Erro");
-        else res.json(rows);
-    })
-
+  db.all(sql, [nome], (err, rows) => {
+    if (err) res.send(err, "Erro");
+    else res.json(rows);
+  });
 });
-
 
 app.put("Atualizar_Usuario/:nome", (req, res) => {
+  var nome = req.params.nome;
+  var email = req.params.email;
+  var senha = req.params.senha;
 
-    var nome = req.params.nome;
-    var email = req.params.email;
-    var senha = req.params.senha;
+  var sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ? WHERE NOME = ?";
 
-    var sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ? WHERE NOME = ?";
-
-    db.run(sql, [nome, email, senha], (err) => {
-        if (err) res.send(err, "Não foi possível atualizar o usuario");
-        else res.send("Registro atualizado com sucesso no usuario = " + nome);
-    })
+  db.run(sql, [nome, email, senha], (err) => {
+    if (err) res.send(err, "Não foi possível atualizar o usuario");
+    else res.send("Registro atualizado com sucesso no usuario = " + nome);
+  });
 });
 
-
 app.delete("Remover_Usuario/:nome", (req, res) => {
+  var nome = req.params.nome;
 
-    var nome = req.params.nome;
-
-    var sql = "DELETE FROM USUARIOS WHERE ID = ?;";
-
-})
+  var sql = "DELETE FROM USUARIOS WHERE ID = ?;";
+});
 
 // Fim da Parte do Joahlan
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //Parte do Daniel
 
 app.get("/itens-pedido", (req, res) => {
-
-    const query = `
+  const query = `
        SELECT
   Itens_Pedido.id,
   Itens_Pedido.quantidade,
@@ -287,83 +253,153 @@ JOIN Produtos ON Itens_Pedido.produto_id = Produtos.id;
 
         `;
 
-    db.all(query, [], (err, rows) => {
-        if (err) res.send(err);
-        else res.json(rows);
-    })
-
+  db.all(query, [], (err, rows) => {
+    if (err) res.send(err);
+    else res.json(rows);
+  });
 });
-
 
 app.post("/itens-pedido", (req, res) => {
-    console.log("Dados recebidos no backend:", req.body);
-    
-    var pedido_id = req.body.pedido_id;
-    var produto_id = req.body.produto_id;
-    var quantidade = req.body.quantidade;
+  console.log("Dados recebidos no backend:", req.body);
 
-    var query = "INSERT INTO Itens_Pedido(pedido_id, produto_id, quantidade) VALUES(?, ?, ?);";
+  var pedido_id = req.body.pedido_id;
+  var produto_id = req.body.produto_id;
+  var quantidade = req.body.quantidade;
 
+  var query =
+    "INSERT INTO Itens_Pedido(pedido_id, produto_id, quantidade) VALUES(?, ?, ?);";
 
-    db.run(query, [pedido_id, produto_id, quantidade], (err) => {
-        if (err) res.send(err);
-        else res.send("Detalhes do pedidos Inseridos!");
-    })
-
+  db.run(query, [pedido_id, produto_id, quantidade], (err) => {
+    if (err) res.send(err);
+    else res.send("Detalhes do pedidos Inseridos!");
+  });
 });
-
 
 app.get("/itens-pedido/:id", (req, res) => {
+  var pedidoid = req.params.id;
 
-    var pedidoid = req.params.id;
+  var query = "SELECT * FROM Itens_Pedido WHERE id = ?";
 
-    var query = "SELECT * FROM Itens_Pedido WHERE id = ?";
-
-    db.all(query, [pedidoid], (err, rows) => {
-        if (err) res.send(err);
-        else res.json(rows);
-    })
-
+  db.all(query, [pedidoid], (err, rows) => {
+    if (err) res.send(err);
+    else res.json(rows);
+  });
 });
 
-
 app.put("/itens-pedido/:id", (req, res) => {
+  var id = req.params.id;
+  var pedido_id = req.body.pedido_id;
+  var produto_id = req.body.produto_id;
+  var quantidade = req.body.quantidade;
 
-    var id = req.params.id;
-    var pedido_id = req.body.pedido_id;
-    var produto_id = req.body.produto_id;
-    var quantidade = req.body.quantidade;
-
-    var query = `
+  var query = `
     UPDATE Itens_Pedido
     SET pedido_id = ?, produto_id = ?, quantidade = ?
     WHERE id = ?
 `;
 
-    db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
-        if (err) res.send(err);
-        else res.send("Item do Pedido Atualizado com Sucesso");
-    })
+  db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
+    if (err) res.send(err);
+    else res.send("Item do Pedido Atualizado com Sucesso");
+  });
 });
-
 
 app.delete("/itens-pedido/:id", (req, res) => {
+  var id = req.params.id;
 
-    var id = req.params.id;
+  var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
 
-    var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
-
-    db.run(query, [id], (err) => {
-        if (err) res.send(err);
-        else res.send("Item do Pedido Deletado Com Sucesso!");
-    })
+  db.run(query, [id], (err) => {
+    if (err) res.send(err);
+    else res.send("Item do Pedido Deletado Com Sucesso!");
+  });
 });
 
+app.get("/agendamentos", (req, res) => {
+  const query = `
+      SELECT 
+            a.id AS agendamento_id,
+            a.data_hora,
+            a.status,
+
+            v.id AS veiculo_id,
+            v.placa,
+            v.modelo,
+            v.ano,
+
+            m.id AS motorista_id,
+            m.nome AS motorista_nome,
+            m.telefone AS motorista_telefone,
+            m.cpf AS motorista_cpf,
+            m.cnh AS motorista_cnh
+
+        FROM Agendamentos_CargaDescarga a
+        JOIN Veiculos v ON a.veiculo_id = v.id
+        JOIN Motoristas m ON v.motorista_id = m.id
+        ORDER BY a.data_hora ASC;
 
 
+        `;
 
+  db.all(query, [], (err, rows) => {
+    if (err) res.send(err);
+    else res.json(rows);
+  });
+});
 
+app.post("/agendamentos", (req, res) => {
+  console.log("Dados recebidos no backend:", req.body);
 
+  
+  var data_hora = req.body.data_hora;
+  var status = req.body.quantidade;
+
+  var query =
+    "INSERT INTO Agendamentos_CargaDescarga(data_hora, status) VALUES(?, ?);";
+
+  db.run(query, [data_hora, status], (err) => {
+    if (err) res.send(err);
+    else res.send("Agendamento Inseridos!");
+  });
+});
+
+app.get("/agendamentos/:id", (req, res) => {
+  var agendamentoid = req.params.id;
+
+  var query = "SELECT * FROM Agendamentos_CargaDescarga WHERE id = ?";
+
+  db.all(query, [agendamentoid], (err, rows) => {
+    if (err) res.send(err);
+    else res.json(rows);
+  });
+});
+
+app.put("/agendamentos/:id", (req, res) => {
+  var agendamentoid = req.params.agendamentoid;
+  var produto_id = req.body.produto_id;
+  var quantidade = req.body.quantidade;
+
+  var query = `
+    UPDATE Itens_Pedido
+    SET pedido_id = ?, produto_id = ?, quantidade = ?
+    WHERE id = ?
+`;
+
+  db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
+    if (err) res.send(err);
+    else res.send("Item do Pedido Atualizado com Sucesso");
+  });
+});
+
+app.delete("/itens-pedido/:id", (req, res) => {
+  var id = req.params.id;
+
+  var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
+
+  db.run(query, [id], (err) => {
+    if (err) res.send(err);
+    else res.send("Item do Pedido Deletado Com Sucesso!");
+  });
+});
 
 app.listen(3000, console.log("Rodando... http://localhost:3000"));
-

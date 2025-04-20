@@ -241,85 +241,145 @@ app.delete("Remover_Usuario/:nome", (req, res) => {
 
 // Daniel Produtos
 
-app.get("/listar-produtos", (req, res) => {
-  var query = "SELECT * FROM Produtos";
+app.get("/listar-estoque", (req, res) => {
+  const query = `
+    SELECT * FROM Produtos
+  `;
 
   db.all(query, (err, rows) => {
-    if (err) res.send("erro");
-    else res.json(rows);
+    if (err) {
+      console.error("Erro ao listar produtos:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os produtos. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
+  });
+});
+
+app.get("/estoque-minimo", (req, res) => {
+  const query = `
+    SELECT * FROM Produtos
+    WHERE quantidade_estoque < estoque_minimo
+    ORDER BY nome ASC
+  `;
+
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error("Erro ao listar produtos:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os produtos. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
   });
 });
 
 app.post("/addprodutos", (req, res) => {
-  console.log("Dados recebidos no backend:", req.body);
+  const { nome, descricao, quantidade_estoque, estoque_minimo, codigo } =
+    req.body;
 
-  var nome = req.body.nome;
-  var descricao = req.body.descricao;
-  var quantidade_estoque = req.body.quantidade_estoque;
-  var estoque_minimo = req.body.estoque_minimo;
-  var codigo = req.body.codigo;
-
-  var query = `
- INSERT INTO Produtos (nome, descricao, quantidade_estoque, estoque_minimo, codigo)
-    VALUES (?, ?, ?, ?)
-
-   `;
+  const query = `
+    INSERT INTO Produtos (nome, descricao, quantidade_estoque, estoque_minimo, codigo)
+    VALUES (?, ?, ?, ?, ?)
+  `;
 
   db.run(
     query,
     [nome, descricao, quantidade_estoque, estoque_minimo, codigo],
     (err) => {
-      if (err) res.send(err);
-      else res.send("Produtos Inseridos Com Sucesso!");
+      if (err) {
+        console.error("Erro ao inserir produto:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar inserir o produto. Verifique os dados e tente novamente."
+          );
+      }
+      res.send("Produto inserido com sucesso!");
     }
   );
 });
 
-app.get("/detalhes-produto", (req, res) => {
-  console.log(req.body);
-  var codigo = req.query.codigo;
+app.get("/detalhes-produto-codigo", (req, res) => {
+  const codigo = req.query.codigo;
 
-  var query = "SELECT * FROM Produtos WHERE codigo = ?";
+  const query = "SELECT * FROM Produtos WHERE codigo = ?";
 
   db.all(query, [codigo], (err, rows) => {
-    if (err) res.send(err);
-    else res.json(rows);
+    if (err) {
+      console.error("Erro ao buscar produto pelo código:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar produto. Verifique o código e tente novamente.");
+    }
+    res.json(rows);
+  });
+});
+
+app.get("/detalhes-produto-nome", (req, res) => {
+  const nome = req.query.nome;
+
+  const query = `
+    SELECT * FROM Produtos
+    WHERE nome LIKE ?
+  `;
+
+  db.all(query, [`%${nome}%`], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar produto pelo nome:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar produto. Verifique o nome e tente novamente.");
+    }
+    res.json(rows);
   });
 });
 
 app.put("/atualizar-produtos", (req, res) => {
-  console.log(req.body);
-  var nome = req.body.nome;
-  var descricao = req.body.descricao;
-  var quantidade_estoque = req.body.quantidade_estoque;
-  var estoque_minimo = req.body.estoque_minimo;
-  var codigo = req.body.codigo;
+  const { nome, descricao, quantidade_estoque, estoque_minimo, codigo } =
+    req.body;
 
-  var query = `
+  const query = `
     UPDATE Produtos
     SET nome = ?, descricao = ?, quantidade_estoque = ?, estoque_minimo = ?
     WHERE codigo = ?
-`;
+  `;
 
   db.run(
     query,
     [nome, descricao, quantidade_estoque, estoque_minimo, codigo],
     (err) => {
-      if (err) res.send(err);
-      else res.send("Produto Atualizado com Sucesso!");
+      if (err) {
+        console.error("Erro ao atualizar produto:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar atualizar o produto. Tente novamente mais tarde."
+          );
+      }
+      res.send("Produto atualizado com sucesso!");
     }
   );
 });
 
-app.delete("/deletar-produtos", (req, res) => {
-  console.log(req.body);
-  var codigo = req.body.codigo;
+app.delete("/deletar-produto/:codigo", (req, res) => {
+  const { codigo } = req.params;
 
-  var query = "DELETE FROM Produtos WHERE codigo = ?;";
+  const query = "DELETE FROM Produtos WHERE codigo = ?";
 
   db.run(query, [codigo], (err) => {
-    if (err) res.send(err);
-    else res.send("Produto Deletado Com Sucesso!");
+    if (err) {
+      console.error("Erro ao deletar produto:", err);
+      return res
+        .status(500)
+        .send("Erro ao deletar produto. Verifique o código e tente novamente.");
+    }
+    res.send("Produto deletado com sucesso!");
   });
 });
 

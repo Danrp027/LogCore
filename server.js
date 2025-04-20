@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const sqlite = require("sqlite3").verbose();
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -184,62 +185,105 @@ function Criar_tabela_Entregas() {
 
 //Criar_tabela_Entregas();
 
-//Usuarios  Joahlan
-app.get("/Listar_Usuarios", (req, res) => {
-  var sql = "SELECT * FROM USUARIOS";
+app.get("/listar-usuarios", (req, res) => {
+  const query = `
+  SELECT nome, email, matricula FROM Usuarios
+  `;
 
-  db.all(sql, (err, rows) => {
-    if (err) res.send("erro");
-    else res.json(rows);
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error("Erro ao listar Usuarios:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os Usuarios. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
   });
 });
 
-app.post("/Criar_Novo_Usuario", (req, res) => {
-  var nome = req.body.nome;
-  var email = req.body.email;
-  var senha = req.body.senha;
+app.post("/addusuarios", (req, res) => {
+  const { nome, email, senha, matricula } = req.body;
 
-  var sql = "INSERT INTO USUARIOS(NOME, EMAIL, SENHA), VALUES(?, ?, ?);";
+  bcrypt.hash(senha, 10).then((senhaCriptografada) => {
+    const query = `INSERT INTO Usuarios (nome, email, senha, matricula) VALUES (?, ?, ?, ?)`;
 
-  db.run(sql, [nome, email, senha], (err) => {
-    if (err) res.send("Erro");
-    else res.send("Usuario Criado com Sucesso!");
+    db.run(query, [nome, email, senhaCriptografada, matricula], (err) => {
+      if (err) {
+        console.error("Erro ao inserir Usuario:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar inserir o Usuario. Verifique os dados e tente novamente."
+          );
+      }
+      res.send("Usuario Cadastrado com sucesso!");
+    });
   });
 });
 
-app.get("Usuario_Especifico/:nome", (req, res) => {
-  var nome = req.params.nome;
+app.get("/usuario-especifico", (req, res) => {
+  const nome = req.query.nome;
 
-  var sql = "SELECT * FROM USUARIOS WHERE NOME = ?";
+  const query = `
+  SELECT nome, email, matricula FROM Usuarios
+  WHERE nome LIKE ?
+`;
 
-  db.all(sql, [nome], (err, rows) => {
-    if (err) res.send(err, "Erro");
-    else res.json(rows);
+
+  db.all(query, [`%${nome}%`], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar usuario pelo nome:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar usuario. Verifique o nome e tente novamente.");
+    }
+    res.json(rows);
   });
 });
 
-app.put("Atualizar_Usuario/:nome", (req, res) => {
-  var nome = req.params.nome;
-  var email = req.params.email;
-  var senha = req.params.senha;
+app.put("/atualizar-usuarios", (req, res) => {
+  const { email, senha } = req.body;
 
-  var sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ? WHERE NOME = ?";
+  bcrypt.hash(senha, 10).then((senhaCriptografada) => {
+    const query = `
+    UPDATE Usuarios
+    SET senha = ?
+    WHERE email = ?
+  `;
 
-  db.run(sql, [nome, email, senha], (err) => {
-    if (err) res.send(err, "Não foi possível atualizar o usuario");
-    else res.send("Registro atualizado com sucesso no usuario = " + nome);
+    db.run(query, [senhaCriptografada, email], (err) => {
+      if (err) {
+        console.error("Erro ao atualizar Usuario:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar atualizar o usuario. Tente novamente mais tarde."
+          );
+      }
+      res.send("Usuario atualizado com sucesso!");
+    });
   });
 });
 
-app.delete("Remover_Usuario/:nome", (req, res) => {
-  var nome = req.params.nome;
+app.delete("/remover-usuario/:matricula", (req, res) => {
+  const { matricula } = req.params;
 
-  var sql = "DELETE FROM USUARIOS WHERE ID = ?;";
+  const query = "DELETE FROM Usuarios WHERE matricula = ?";
+
+  db.run(query, [matricula], (err) => {
+    if (err) {
+      console.error("Erro ao deletar Usuario:", err);
+      return res
+        .status(500)
+        .send(
+          "Erro ao deletar usuario. Verifique se está correto e tente novamente."
+        );
+    }
+    res.send("Usuario deletado com sucesso!");
+  });
 });
-
-// Fim Usuarios Joahlan
-
-// Daniel Produtos
 
 app.get("/listar-estoque", (req, res) => {
   const query = `

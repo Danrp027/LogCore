@@ -185,6 +185,7 @@ function Criar_tabela_Entregas() {
 
 //Criar_tabela_Entregas();
 
+//Modulo 1 Estrutura Inicial Usuarios.
 app.get("/listar-usuarios", (req, res) => {
   const query = `
   SELECT nome, email, matricula FROM Usuarios
@@ -230,7 +231,6 @@ app.get("/usuario-especifico", (req, res) => {
   SELECT nome, email, matricula FROM Usuarios
   WHERE nome LIKE ?
 `;
-
 
   db.all(query, [`%${nome}%`], (err, rows) => {
     if (err) {
@@ -284,7 +284,9 @@ app.delete("/remover-usuario/:matricula", (req, res) => {
     res.send("Usuario deletado com sucesso!");
   });
 });
+// Fim do Modulo 1
 
+// Modulo 2 Estoque Produtos.
 app.get("/listar-estoque", (req, res) => {
   const query = `
     SELECT * FROM Produtos
@@ -427,167 +429,244 @@ app.delete("/deletar-produto/:codigo", (req, res) => {
   });
 });
 
-// Fim Produtos Daniel
+// Fim Modulo 2.
 
-//Parte do Daniel
+//Modulo 3 Entregas.  motoristas, veiculos, pedidos e entregas.
 
-app.get("/itens-pedido", (req, res) => {
+//Motoristas
+app.get("/listar-motoristas", (req, res) => {
   const query = `
-       SELECT
-  Itens_Pedido.id,
-  Itens_Pedido.quantidade,
-  Itens_Pedido.pedido_id,
-  Produtos.nome AS produto_nome
-FROM Itens_Pedido
-JOIN Produtos ON Itens_Pedido.produto_id = Produtos.id;
+    SELECT * FROM Motoristas
+  `;
 
-        `;
-
-  db.all(query, [], (err, rows) => {
-    if (err) res.send(err);
-    else res.json(rows);
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error("Erro ao listar Motoristas:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os Motoristas. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
   });
 });
 
-app.post("/itens-pedido", (req, res) => {
-  console.log("Dados recebidos no backend:", req.body);
+app.post("/criar-motorista", (req, res) => {
+  const { nome, telefone, cpf, cnh } = req.body;
 
-  var pedido_id = req.body.pedido_id;
-  var produto_id = req.body.produto_id;
-  var quantidade = req.body.quantidade;
+  const query = `
+    INSERT INTO Motoristas (nome, telefone, cpf, cnh)
+    VALUES (?, ?, ?, ?)
+  `;
 
-  var query =
-    "INSERT INTO Itens_Pedido(pedido_id, produto_id, quantidade) VALUES(?, ?, ?);";
-
-  db.run(query, [pedido_id, produto_id, quantidade], (err) => {
-    if (err) res.send(err);
-    else res.send("Detalhes do pedidos Inseridos!");
+  db.run(query, [nome, telefone, cpf, cnh], (err) => {
+    if (err) {
+      console.error("Erro ao inserir Motorista:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar inserir Motorista. Verifique os dados e tente novamente."
+        );
+    }
+    res.send("Motorista inserido com sucesso!");
   });
 });
 
-app.get("/itens-pedido/:id", (req, res) => {
-  var pedidoid = req.params.id;
+app.get("/detalhes-motorista-cpf", (req, res) => {
+  const cpf = req.query.cpf;
 
-  var query = "SELECT * FROM Itens_Pedido WHERE id = ?";
+  const query = "SELECT * FROM Motoristas WHERE cpf = ?";
 
-  db.all(query, [pedidoid], (err, rows) => {
-    if (err) res.send(err);
-    else res.json(rows);
+  db.all(query, [cpf], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar Motorista pelo CPF:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar Motorista. Verifique o CPF e tente novamente.");
+    }
+    res.json(rows);
   });
 });
 
-app.put("/itens-pedido/:id", (req, res) => {
-  var id = req.params.id;
-  var pedido_id = req.body.pedido_id;
-  var produto_id = req.body.produto_id;
-  var quantidade = req.body.quantidade;
+app.get("/detalhes-motorista-nome", (req, res) => {
+  const nome = req.query.nome;
 
-  var query = `
-    UPDATE Itens_Pedido
-    SET pedido_id = ?, produto_id = ?, quantidade = ?
-    WHERE id = ?
+  const query = `
+    SELECT * FROM Motoristas
+    WHERE nome LIKE ?
+  `;
+
+  db.all(query, [`%${nome}%`], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar Motorista pelo nome:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar Motorista. Verifique o nome e tente novamente.");
+    }
+    res.json(rows);
+  });
+});
+
+app.put("/atualizar-motorista", (req, res) => {
+  const { nome, telefone, cpf, cnh } = req.body;
+
+  const query = `
+    UPDATE Motoristas
+    SET nome = ?, telefone = ?, cpf = ?, cnh = ?
+    WHERE cpf = ?
+  `;
+
+  db.run(query, [nome, telefone, cpf, cnh], (err) => {
+    if (err) {
+      console.error("Erro ao atualizar Motorista:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar atualizar o Motorista. Tente novamente mais tarde."
+        );
+    }
+    res.send("Motorista atualizado com sucesso!");
+  });
+});
+
+app.delete("/deletar-motorista/:cpf", (req, res) => {
+  const { cpf } = req.params;
+
+  const query = "DELETE FROM Motoristas WHERE cpf = ?";
+
+  db.run(query, [cpf], (err) => {
+    if (err) {
+      console.error("Erro ao deletar motorista:", err);
+      return res
+        .status(500)
+        .send("Erro ao deletar motorista. Verifique o cpf e tente novamente.");
+    }
+    res.send("Motorista deletado com sucesso!");
+  });
+});
+//Fim Motorista
+
+//Veiculos
+app.get("/veiculos", (req, res) => {
+  const query = `
+  SELECT v.*, m.nome AS nome_motorista
+  FROM veiculos v
+  LEFT JOIN motoristas m ON v.motorista_id = m.id
 `;
 
-  db.run(query, [pedido_id, produto_id, quantidade, id], (err) => {
-    if (err) res.send(err);
-    else res.send("Item do Pedido Atualizado com Sucesso");
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error("Erro ao listar veiculos:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os veiculos. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
   });
 });
 
-app.delete("/itens-pedido/:id", (req, res) => {
-  var id = req.params.id;
+app.post("/veiculos", (req, res) => {
+  const { placa, modelo, ano, motorista_id } = req.body;
 
-  var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
-
-  db.run(query, [id], (err) => {
-    if (err) res.send(err);
-    else res.send("Item do Pedido Deletado Com Sucesso!");
-  });
-});
-
-app.get("/agendamentos", (req, res) => {
   const query = `
-      SELECT 
-            a.id AS agendamento_id,
-            a.data_hora,
-            a.status,
+    INSERT INTO Veiculos (placa, modelo, ano, motorista_id)
+    VALUES (?, ?, ?, ?)
+  `;
 
-            v.id AS veiculo_id,
-            v.placa,
-            v.modelo,
-            v.ano,
-
-            m.id AS motorista_id,
-            m.nome AS motorista_nome,
-            m.telefone AS motorista_telefone,
-            m.cpf AS motorista_cpf,
-            m.cnh AS motorista_cnh
-
-        FROM Agendamentos_CargaDescarga a
-        JOIN Veiculos v ON a.veiculo_id = v.id
-        JOIN Motoristas m ON v.motorista_id = m.id
-        ORDER BY a.data_hora ASC;
-
-
-        `;
-
-  db.all(query, [], (err, rows) => {
-    if (err) res.send(err);
-    else res.json(rows);
+  db.run(query, [placa, modelo, ano, motorista_id], (err) => {
+    if (err) {
+      console.error("Erro ao inserir Veiculo:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar inserir o Veiculo. Verifique os dados e tente novamente."
+        );
+    }
+    res.send("Veiculo inserido com sucesso!");
   });
 });
 
-app.post("/agendamentos", (req, res) => {
-  console.log("Dados recebidos no backend:", req.body);
+app.get("/veiculos-placa", (req, res) => {
+  const placa = req.query.placa;
 
-  var data_hora = req.body.data_hora;
-  var status = req.body.status;
+  const query = `
+    SELECT veiculos.*, motoristas.nome AS nome_motorista
+    FROM veiculos
+    LEFT JOIN motoristas ON veiculos.motorista_id = motoristas.id
+    WHERE veiculos.placa = ?
+  `;
 
-  var query =
-    "INSERT INTO Agendamentos_CargaDescarga(data_hora, status) VALUES(?, ?);";
-
-  db.run(query, [data_hora, status], (err) => {
-    if (err) res.send(err);
-    else res.send("Agendamento Inseridos!");
+  db.all(query, [placa], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar Veiculo pela placa:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar veiculo. Verifique a placa e tente novamente.");
+    }
+    res.json(rows);
   });
 });
 
-app.get("/agendamentos/:id", (req, res) => {
-  var agendamentoid = req.params.id;
+app.get("/veiculos-modelo", (req, res) => {
+  const modelo = req.query.modelo;
 
-  var query = "SELECT * FROM Agendamentos_CargaDescarga WHERE id = ?";
+  const query = `
+    SELECT * FROM Veiculos
+    WHERE modelo LIKE ?
+  `;
 
-  db.all(query, [agendamentoid], (err, rows) => {
-    if (err) res.send(err);
-    else res.json(rows);
+  db.all(query, [`%${modelo}%`], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar Veiculo pelo modelo:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar veiculo. Verifique o nome e tente novamente.");
+    }
+    res.json(rows);
   });
 });
 
-app.put("/agendamentos/:id", (req, res) => {
-  var data_hora = req.body.data_hora;
-  var status = req.body.status;
+app.put("/veiculos/:placa", (req, res) => {
+  const { placa } = req.params;
+  const { modelo, ano, motorista_id } = req.body;
 
-  var query = `
-    UPDATE Itens_Pedido
-    SET data_hora = ?, status = ?
-    WHERE id = ?
-`;
+  const query = `
+    UPDATE Veiculos
+    SET modelo = ?, ano = ?, motorista_id = ?
+    WHERE placa = ?
+  `;
 
-  db.run(query, [], (err) => {
-    if (err) res.send(err);
-    else res.send("Item do Pedido Atualizado com Sucesso");
+  db.run(query, [modelo, ano, motorista_id, placa], (err) => {
+    if (err) {
+      console.error("Erro ao atualizar veiculo:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar atualizar o Veiculo. Tente novamente mais tarde."
+        );
+    }
+    res.send("Veiculo atualizado com sucesso!");
   });
 });
 
-app.delete("/itens-pedido/:id", (req, res) => {
-  var id = req.params.id;
+app.delete("/veiculos/:placa", (req, res) => {
+  const { placa } = req.params;
 
-  var query = "DELETE FROM Itens_Pedido WHERE ID = ?;";
+  const query = "DELETE FROM Veiculos WHERE placa = ?";
 
-  db.run(query, [id], (err) => {
-    if (err) res.send(err);
-    else res.send("Item do Pedido Deletado Com Sucesso!");
+  db.run(query, [placa], (err) => {
+    if (err) {
+      console.error("Erro ao deletar veiculo:", err);
+      return res
+        .status(500)
+        .send("Erro ao deletar veiculo. Verifique a placa e tente novamente.");
+    }
+    res.send("Veiculo deletado com sucesso!");
   });
 });
+//Fim Veiculos.
 
 app.listen(3000, console.log("Rodando... http://localhost:3000"));

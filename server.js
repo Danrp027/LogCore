@@ -185,6 +185,13 @@ function Criar_tabela_Entregas() {
 
 //Criar_tabela_Entregas();
 
+function gerarCodigoPedido() {
+  const timestamp = Date.now();
+  return `PED-${timestamp}`;
+}
+
+
+
 //Modulo 1 Estrutura Inicial Usuarios.
 app.get("/listar-usuarios", (req, res) => {
   const query = `
@@ -668,5 +675,134 @@ app.delete("/veiculos/:placa", (req, res) => {
   });
 });
 //Fim Veiculos.
+
+//Pedidos
+app.get("/pedidos", (req, res) => {
+  const query = `
+    SELECT * FROM Pedidos
+  `;
+
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error("Erro ao listar pedidos:", err);
+      return res
+        .status(500)
+        .send(
+          "Ocorreu um erro ao tentar listar os pedidos. Tente novamente mais tarde."
+        );
+    }
+    res.json(rows);
+  });
+});
+
+app.post("/pedidos", (req, res) => {
+  
+  const { cliente_nome, endereco_entrega, data_entrega, status } = req.body;
+const codigo = gerarCodigoPedido();
+
+  const query = `
+    INSERT INTO Pedidos (cliente_nome, endereco_entrega, data_entrega, status, codigo)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.run(
+    query,
+    [cliente_nome, endereco_entrega, data_entrega, status, codigo],
+    (err) => {
+      if (err) {
+        console.error("Erro ao inserir pedido:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar inserir o pedido. Verifique os dados e tente novamente."
+          );
+      }
+      res.send("Pedido inserido com sucesso!");
+    }
+  );
+});
+
+app.get("/pedidos-data", (req, res) => {
+  const { data_entrega } = req.query;
+
+  const query = `
+    SELECT * FROM pedidos
+    WHERE data_entrega = ?
+  `;
+
+  db.all(query, [data_entrega], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar produto pela data:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar pedido. Verifique a data e tente novamente.");
+    }
+    res.json(rows);
+  });
+});
+
+app.get("/pedidos-codigo", (req, res) => {
+  const codigo = req.query.codigo;
+
+  const query = `
+    SELECT * FROM Pedidos
+    WHERE codigo LIKE ?
+  `;
+
+  db.all(query, [`%${codigo}%`], (err, rows) => {
+    if (err) {
+      console.error("Erro ao buscar pelo N° do Pedido:", err);
+      return res
+        .status(500)
+        .send("Erro ao buscar N° do pedido. Verifique o nome do codigo e tente novamente.");
+    }
+    res.json(rows);
+  });
+});
+
+app.put("/pedidos/:codigo", (req, res) => {
+  const { codigo } = req.params;
+  const { cliente_nome, endereco_entrega, data_entrega, status } =
+    req.body;
+
+  const query = `
+    UPDATE Pedidos
+    SET cliente_nome = ?, endereco_entrega = ?, data_entrega = ?, status = ?
+    WHERE codigo = ?
+  `;
+
+  db.run(
+    query,
+    [cliente_nome, endereco_entrega, data_entrega, status, codigo],
+    (err) => {
+      if (err) {
+        console.error("Erro ao atualizar pedido:", err);
+        return res
+          .status(500)
+          .send(
+            "Ocorreu um erro ao tentar atualizar o pedido. Tente novamente mais tarde."
+          );
+      }
+      res.send("Pedido atualizado com sucesso!");
+    }
+  );
+});
+
+app.delete("/pedidos/:codigo", (req, res) => {
+  const { codigo } = req.params;
+
+  const query = "DELETE FROM Pedidos WHERE codigo = ?";
+
+  db.run(query, [codigo], (err) => {
+    if (err) {
+      console.error("Erro ao deletar pedido:", err);
+      return res
+        .status(500)
+        .send("Erro ao deletar pedido. Verifique o código e tente novamente.");
+    }
+    res.send("Pedido deletado com sucesso!");
+  });
+});
+// Fim Pedidos.
 
 app.listen(3000, console.log("Rodando... http://localhost:3000"));

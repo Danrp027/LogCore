@@ -826,42 +826,42 @@ app.get("/entregas", (req, res) => {
 
 app.post("/entregas", (req, res) => {
   
-  const { pedido_id, motorista_id, data_entrega, status } = req.body;
+  const { pedido_id, motorista_id, data_envio, data_entrega } = req.body;
 
 
   const query = `
-    INSERT INTO Pedidos (cliente_nome, endereco_entrega, data_entrega, status, codigo)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO Entregas (pedido_id, motorista_id, data_envio, data_entrega)
+    VALUES (?, ?, ?, ?)
   `;
 
   db.run(
     query,
-    [cliente_nome, endereco_entrega, data_entrega, status, codigo],
+    [pedido_id, motorista_id, data_envio, data_entrega],
     (err) => {
       if (err) {
-        console.error("Erro ao inserir pedido:", err);
+        console.error("Erro ao inserir entrega:", err);
         return res
           .status(500)
           .send(
-            "Ocorreu um erro ao tentar inserir o pedido. Verifique os dados e tente novamente."
+            "Ocorreu um erro ao tentar inserir a entrega. Verifique os dados e tente novamente."
           );
       }
-      res.send("Pedido inserido com sucesso!");
+      res.send("Entrega inserido com sucesso!");
     }
   );
 });
 
-app.get("/pedidos-data", (req, res) => {
-  const { data_entrega } = req.query;
+app.get("/entregas-data", (req, res) => {
+  const { data_envio } = req.query;
 
   const query = `
-    SELECT * FROM pedidos
-    WHERE data_entrega = ?
+    SELECT * FROM Entregas
+    WHERE data_envio = ?
   `;
 
-  db.all(query, [data_entrega], (err, rows) => {
+  db.all(query, [data_envio], (err, rows) => {
     if (err) {
-      console.error("Erro ao buscar produto pela data:", err);
+      console.error("Erro ao buscar produto pela data de emvio:", err);
       return res
         .status(500)
         .send("Erro ao buscar pedido. Verifique a data e tente novamente.");

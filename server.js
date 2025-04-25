@@ -696,9 +696,9 @@ app.get("/pedidos", (req, res) => {
 });
 
 app.post("/pedidos", (req, res) => {
-  
+
   const { cliente_nome, endereco_entrega, data_entrega, status } = req.body;
-const codigo = gerarCodigoPedido();
+  const codigo = gerarCodigoPedido();
 
   const query = `
     INSERT INTO Pedidos (cliente_nome, endereco_entrega, data_entrega, status, codigo)
@@ -825,7 +825,7 @@ app.get("/entregas", (req, res) => {
 });
 
 app.post("/entregas", (req, res) => {
-  
+
   const { pedido_id, motorista_id, data_envio, data_entrega } = req.body;
 
 
@@ -932,5 +932,29 @@ app.delete("/pedidos/:codigo", (req, res) => {
     res.send("Pedido deletado com sucesso!");
   });
 });
+
+app.post("fazer_agendamento", (req, res) => {
+
+  const veiculo_id = req.params.veiculo_id
+  const data_hora = req.params.data_hora
+  const status = req.params.status
+
+  const query = "INSERT INTO Agendamentos_CargaDescarga (veiculo_id, data_hora, status) VALUES ( ?, ?, ? );";
+
+  db.run(query, [veiculo_id, data_hora, status], (err) => {
+    if (err) {
+      console.log("Erro ao tentar fazer agendamento", err);
+      return res
+        .status(500)
+        .send("Ocorreu um erro ao tentar realizar o agendamento", err)
+    }
+    else res.send("Agendamento realizado com sucesso!")
+  });
+
+});
+
+app.get("consultar_agendamentos", (req, res) => {
+  
+})
 
 app.listen(3000, console.log("Rodando... http://localhost:3000"));
